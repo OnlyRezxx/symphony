@@ -1,0 +1,55 @@
+-- 1. Tabel Profil untuk menyimpan Role
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  email TEXT,
+  role TEXT CHECK (role IN ('user', 'admin')) DEFAULT 'user',
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Tabel Applications (sudah ada, kita pastikan relasinya)
+CREATE TABLE IF NOT EXISTS applications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  username TEXT NOT NULL,
+  discord TEXT NOT NULL,
+  age INTEGER NOT NULL,
+  role_id TEXT NOT NULL,
+  experience TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  status TEXT DEFAULT 'PENDING',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3. Aktifkan RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
+
+-- 4. Kebijakan Keamanan (Policies)
+CREATE POLICY "Public profiles are viewable by everyone" ON profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can view own applications" ON applications FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own applications" ON applications FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Admins can view all applications" ON applications FOR SELECT USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Admins can update all applications" ON applications FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+
+-- 5. Trigger Otomatis: Buat Profile saat Sign Up
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, role)
+  VALUES (new.id, new.email, 'user');
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- CARA MENJADIKAN ADMIN (Jalankan manual di SQL Editor):
+-- UPDATE profiles SET role = 'admin' WHERE email = 'email_anda@gmail.com';
