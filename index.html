@@ -43,6 +43,9 @@
               DEFAULT: "hsl(240 10% 6%)",
               foreground: "hsl(0 0% 98%)",
             },
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }
         }
       }
@@ -53,6 +56,8 @@
       background-color: hsl(240 10% 3.9%);
       color: hsl(0 0% 98%);
       -webkit-font-smoothing: antialiased;
+      margin: 0;
+      overflow-x: hidden;
     }
     .glass {
       background: rgba(9, 9, 11, 0.8);
@@ -72,6 +77,58 @@
       background: hsl(240 3.7% 25%);
       border-radius: 10px;
     }
+
+    /* Initial Splash Screen Styles */
+    #initial-loader {
+      position: fixed;
+      inset: 0;
+      background: hsl(240 10% 3.9%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    .loader-logo {
+      width: 64px;
+      height: 64px;
+      background: hsl(263.4 70% 50.4%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 32px;
+      color: white;
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+      animation: logo-pulse 2s ease-in-out infinite;
+    }
+    @keyframes logo-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    .loader-bar {
+      width: 140px;
+      height: 2px;
+      background: rgba(255,255,255,0.05);
+      margin-top: 32px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+    .loader-progress {
+      position: absolute;
+      inset: 0;
+      background: hsl(263.4 70% 50.4%);
+      width: 40%;
+      animation: progress-move 2s ease-in-out infinite;
+    }
+    @keyframes progress-move {
+      0% { left: -40%; width: 20%; }
+      50% { width: 60%; }
+      100% { left: 100%; width: 20%; }
+    }
   </style>
 <script type="importmap">
 {
@@ -87,7 +144,26 @@
 <link rel="stylesheet" href="/index.css">
 </head>
 <body>
+  <!-- Splash Screen Terlihat Sebelum React Ready -->
+  <div id="initial-loader">
+    <div class="loader-logo">S</div>
+    <div class="loader-bar"><div class="loader-progress"></div></div>
+    <div style="margin-top: 16px; font-size: 10px; font-weight: 800; letter-spacing: 0.4em; color: rgba(255,255,255,0.3); text-transform: uppercase;">Symphony OS</div>
+  </div>
+
   <div id="root"></div>
+
+  <script>
+    // Menghapus loader setelah React di-mount (ditangani di App.tsx juga bisa, tapi ini cadangan)
+    window.addEventListener('load', () => {
+      // Biarkan sedikit delay agar transisinya terasa
+      setTimeout(() => {
+        const loader = document.getElementById('initial-loader');
+        if (loader) loader.style.opacity = '0';
+        setTimeout(() => loader?.remove(), 500);
+      }, 1000);
+    });
+  </script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>

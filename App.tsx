@@ -18,17 +18,25 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // Initial session check
-    supabaseClient?.auth.getSession().then(({ data: { session } }) => {
+    const initAuth = async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
       setSession(session);
-      if (session) checkRole(session.user.id);
-      else setLoading(false);
-    });
+      if (session) {
+        await checkRole(session.user.id);
+      } else {
+        // Menunggu sebentar untuk visual loading yang lebih baik
+        setTimeout(() => setLoading(false), 800);
+      }
+    };
+
+    initAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
-      if (session) checkRole(session.user.id);
-      else {
+      if (session) {
+        await checkRole(session.user.id);
+      } else {
         setRole(null);
         setLoading(false);
       }
@@ -41,38 +49,66 @@ const App: React.FC = () => {
     const r = await getUserRole(userId);
     setRole(r);
     setLoading(false);
+    
+    // Hilangkan manual splash screen dari index.html jika masih ada
+    const loader = document.getElementById('initial-loader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 500);
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-        <div className="text-primary font-black tracking-[0.3em] text-[10px] uppercase animate-pulse">Symphony OS Initializing...</div>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Background Animation */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-50 animate-pulse-slow"></div>
+        
+        <div className="relative z-10 flex flex-col items-center">
+          <div className="w-20 h-20 bg-primary rounded-[2rem] flex items-center justify-center text-white font-black text-4xl shadow-[0_0_50px_rgba(139,92,246,0.3)] animate-bounce mb-8">
+            S
+          </div>
+          
+          <div className="flex flex-col items-center gap-4">
+            <h1 className="text-white font-black tracking-[0.5em] text-xs uppercase opacity-80">Symphony Network</h1>
+            <div className="w-48 h-1 bg-white/5 rounded-full overflow-hidden relative">
+              <div className="absolute inset-y-0 left-0 bg-primary w-full -translate-x-full animate-[progress-move_2s_infinite]"></div>
+            </div>
+            <p className="text-muted-foreground font-bold text-[9px] uppercase tracking-[0.2em] animate-pulse">Menghubungkan ke Pusat Data...</p>
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes progress-move {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0%); }
+            100% { transform: translateX(100%); }
+          }
+        `}</style>
       </div>
     );
   }
 
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 flex flex-col">
+      <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30 flex flex-col animate-in fade-in duration-1000">
         <Navbar role={role} />
         <main className="flex-grow relative z-10">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/roles" element={<Roles />} />
             
-            {/* Auth Routes - URL TERPISAH */}
+            {/* Auth Routes */}
             <Route path="/auth/login" element={session ? <Navigate to="/dashboard" /> : <Login />} />
             <Route path="/auth/signup" element={session ? <Navigate to="/dashboard" /> : <Signup />} />
             
-            {/* Dashboard User - Halaman Utama setelah Login */}
+            {/* User Routes */}
             <Route path="/dashboard" element={session ? <UserDashboard /> : <Navigate to="/auth/login" />} />
             <Route path="/apply" element={session ? <Apply /> : <Navigate to="/auth/login" />} />
             
-            {/* Dashboard Admin - Area Rahasia */}
+            {/* Admin Routes */}
             <Route path="/admin/dashboard" element={role === 'admin' ? <AdminDashboard /> : <Navigate to="/" />} />
             
-            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
