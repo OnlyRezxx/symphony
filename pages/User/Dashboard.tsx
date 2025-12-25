@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchMyApplications, supabaseClient } from '../../services/supabase';
@@ -18,70 +17,61 @@ const UserDashboard: React.FC = () => {
     });
   }, []);
 
+  const StatusBadge = ({ status }: { status: string }) => {
+    const styles = {
+      PENDING: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+      ACCEPTED: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+      REJECTED: "bg-destructive/10 text-destructive border-destructive/20"
+    };
+    const labels = { PENDING: "Pending", ACCEPTED: "Diterima", REJECTED: "Ditolak" };
+    return (
+      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${styles[status as keyof typeof styles]}`}>
+        {labels[status as keyof typeof labels]}
+      </span>
+    );
+  };
+
   return (
-    <div className="container mx-auto py-16 px-6 max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="bg-gradient-to-br from-primary/20 to-transparent p-10 rounded-[3rem] border border-primary/20 mb-12 flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl">
+    <div className="container mx-auto py-16 px-6 max-w-4xl">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-16 p-8 border border-border bg-zinc-950/30 rounded-xl">
         <div className="text-center md:text-left">
-          <div className="text-primary font-black text-[10px] uppercase tracking-[0.4em] mb-3">Selamat Datang Kembali</div>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 truncate max-w-md">{user?.email?.split('@')[0]}</h2>
-          <div className="flex flex-wrap justify-center md:justify-start gap-4">
-            <div className="px-4 py-2 bg-background/50 backdrop-blur-md border border-white/5 rounded-xl text-xs font-bold">
-              ID: {user?.id.slice(0, 8)}...
-            </div>
-            <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs font-bold text-emerald-400">
-              Verified User
-            </div>
-          </div>
+          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Status Keanggotaan</p>
+          <h2 className="text-3xl font-bold tracking-tight mb-2 truncate max-w-md">{user?.email?.split('@')[0]}</h2>
+          <div className="text-xs text-zinc-500 font-mono">UID: {user?.id}</div>
         </div>
-        <Link to="/apply" className="h-16 px-10 bg-primary text-white rounded-2xl font-black text-lg flex items-center justify-center shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all w-full md:w-auto">
-          <svg className="mr-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <Link to="/apply" className="h-10 px-6 bg-white text-black rounded-md font-bold text-sm flex items-center justify-center transition-all hover:bg-zinc-200">
           Buat Lamaran Baru
         </Link>
       </div>
 
-      <div className="mb-8">
-        <h3 className="text-xl font-black tracking-tighter flex items-center gap-3">
-          <div className="w-1.5 h-6 bg-primary rounded-full"></div>
-          Status Lamaran Aktif
+      <div className="mb-6">
+        <h3 className="text-lg font-bold flex items-center gap-2">
+          <span className="w-1 h-5 bg-white rounded-full"></span>
+          Riwayat Lamaran
         </h3>
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-4 opacity-40">
-          <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-[10px] font-black uppercase tracking-widest">Sinkronisasi Data...</span>
-        </div>
+        <div className="py-20 flex justify-center"><div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div></div>
       ) : apps.length === 0 ? (
-        <div className="glass rounded-[2.5rem] p-20 text-center border-dashed border-border/50">
-          <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6 opacity-30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
-          </div>
-          <p className="text-muted-foreground font-bold text-lg mb-6">Belum ada riwayat lamaran terdeteksi.</p>
-          <Link to="/apply" className="text-primary font-black hover:underline uppercase tracking-widest text-xs">Mulai Pendaftaran Pertama Anda</Link>
+        <div className="border border-dashed border-border p-20 text-center rounded-xl">
+          <p className="text-zinc-500 text-sm mb-4">Anda belum pernah mengajukan lamaran.</p>
+          <Link to="/apply" className="text-white text-xs font-bold uppercase tracking-widest hover:underline">Mulai Sekarang</Link>
         </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="space-y-3">
           {apps.map(app => (
-            <div key={app.id} className="glass p-8 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-8 border-border/30 hover:border-primary/30 transition-all hover:bg-primary/5 group shadow-xl">
-              <div className="flex items-center gap-6 w-full md:w-auto">
-                <div className={`w-16 h-16 rounded-2xl ${STAFF_ROLES.find(r => r.id === app.role_id)?.color || 'bg-secondary'} flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-black/30 group-hover:scale-110 transition-transform`}>
+            <div key={app.id} className="p-6 border border-border bg-zinc-950/20 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 transition-all hover:border-zinc-700">
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="w-10 h-10 bg-zinc-900 border border-border rounded flex items-center justify-center font-bold">
                   {STAFF_ROLES.find(r => r.id === app.role_id)?.name[0]}
                 </div>
                 <div>
-                  <h4 className="font-black text-2xl tracking-tighter">{STAFF_ROLES.find(r => r.id === app.role_id)?.name}</h4>
-                  <p className="text-xs text-muted-foreground font-black uppercase tracking-widest mt-1">Diajukan: {new Date(app.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  <h4 className="font-bold text-lg leading-none mb-1">{STAFF_ROLES.find(r => r.id === app.role_id)?.name}</h4>
+                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Diajukan: {new Date(app.created_at).toLocaleDateString('id-ID')}</p>
                 </div>
               </div>
-              <div className="w-full md:w-auto flex flex-col items-center md:items-end gap-3">
-                <div className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-lg ${
-                  app.status === 'ACCEPTED' ? 'bg-emerald-500 text-white shadow-emerald-500/20' :
-                  app.status === 'REJECTED' ? 'bg-rose-500 text-white shadow-rose-500/20' :
-                  'bg-amber-500 text-black shadow-amber-500/20'
-                }`}>
-                  {app.status === 'PENDING' ? 'DALAM PENINJAUAN' : app.status === 'ACCEPTED' ? 'DITERIMA' : 'DITOLAK'}
-                </div>
-                <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-50">Ref ID: {app.id.slice(0, 8)}</div>
-              </div>
+              <StatusBadge status={app.status} />
             </div>
           ))}
         </div>

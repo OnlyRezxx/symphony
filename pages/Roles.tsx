@@ -1,43 +1,42 @@
-
 import React from 'react';
 import { STAFF_ROLES, SERVER_NAME } from '../constants';
 
 const Roles: React.FC = () => {
   return (
-    <div className="container mx-auto py-20 px-6 max-w-6xl">
+    <div className="container mx-auto py-24 px-6 max-w-6xl">
       <div className="mb-20 text-center">
-        <h2 className="text-5xl font-black tracking-tighter mb-6">Struktur Organisasi</h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
-          Setiap peran dalam {SERVER_NAME} sangat penting untuk menjaga keharmonisan ekosistem komunitas kami.
+        <h2 className="text-4xl font-bold tracking-tight mb-4 text-gradient">Struktur Organisasi</h2>
+        <p className="text-muted-foreground text-base max-w-xl mx-auto">
+          Tentukan peran yang sesuai dengan keahlian Anda dan bantu {SERVER_NAME} menjadi komunitas yang lebih baik.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {STAFF_ROLES.map((role) => (
-          <div key={role.id} className="group flex flex-col glass rounded-[2.5rem] p-10 transition-all hover:bg-secondary/20 hover:border-primary/30 hover:-translate-y-1">
+          <div key={role.id} className="group flex flex-col border border-border bg-zinc-950/40 rounded-xl p-8 transition-all hover:bg-zinc-900/50">
             <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-5">
-                <div className={`w-14 h-14 rounded-2xl ${role.color} flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-black/20 group-hover:scale-110 group-hover:rotate-3 transition-all`}>
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-md bg-zinc-800 flex items-center justify-center border border-border text-white font-bold text-lg`}>
                   {role.name[0]}
                 </div>
-                <h3 className="text-3xl font-black tracking-tight">{role.name}</h3>
+                <h3 className="text-2xl font-bold tracking-tight">{role.name}</h3>
               </div>
-              <span className="text-[10px] uppercase tracking-[0.25em] font-black text-muted-foreground px-3 py-1.5 bg-border rounded-lg border border-border/50">LEVEL {role.id === 'helper' ? 'I' : role.id === 'moderator' ? 'II' : 'III'}</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest border border-border px-2 py-1 rounded">LEVEL {role.id === 'helper' ? 'I' : role.id === 'moderator' ? 'II' : 'III'}</span>
             </div>
             
-            <p className="text-muted-foreground mb-10 text-base leading-relaxed font-medium flex-grow">
+            <p className="text-zinc-400 mb-10 text-sm leading-relaxed flex-grow">
               {role.description}
             </p>
 
-            <div className="space-y-10">
+            <div className="grid grid-cols-1 gap-8">
               <div>
-                <h4 className="text-primary uppercase text-[10px] font-black tracking-[0.2em] mb-5 flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-primary"></div> Syarat Utama
+                <h4 className="text-zinc-200 text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span className="w-4 h-[1px] bg-zinc-700"></span> Syarat
                 </h4>
-                <ul className="grid grid-cols-1 gap-3">
+                <ul className="space-y-2">
                   {role.requirements.map((req, i) => (
-                    <li key={i} className="flex items-start gap-4 text-sm text-foreground/80 font-semibold">
-                      <svg className="w-5 h-5 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    <li key={i} className="flex items-start gap-3 text-xs text-zinc-500">
+                      <svg className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
                       {req}
                     </li>
                   ))}
@@ -45,12 +44,12 @@ const Roles: React.FC = () => {
               </div>
 
               <div>
-                <h4 className="text-primary uppercase text-[10px] font-black tracking-[0.2em] mb-5 flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-primary"></div> Izin & Hak Akses
+                <h4 className="text-zinc-200 text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <span className="w-4 h-[1px] bg-zinc-700"></span> Izin Akses
                 </h4>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-2">
                   {role.permissions.map((perm, i) => (
-                    <span key={i} className="px-4 py-2 bg-secondary/50 border border-border/50 rounded-xl text-[11px] font-bold text-muted-foreground group-hover:border-primary/40 group-hover:text-foreground transition-all">
+                    <span key={i} className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] font-medium text-zinc-400">
                       {perm}
                     </span>
                   ))}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SERVER_NAME } from '../constants';
@@ -11,44 +10,62 @@ interface Props {
 const Navbar: React.FC<Props> = ({ role }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = supabaseClient.auth.getSession();
 
   const handleLogout = async () => {
     await signOut();
     navigate('/');
   };
 
-  return (
-    <header className="sticky top-0 z-50 w-full glass border-b border-border/50">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center font-bold text-white transition-all group-hover:scale-110">S</div>
-          <span className="text-lg font-black tracking-tight">{SERVER_NAME}</span>
-        </Link>
-        
-        <nav className="hidden md:flex items-center gap-1">
-          <Link to="/" className={`px-4 py-2 text-xs font-bold rounded-md ${location.pathname === '/' ? 'text-primary' : 'text-muted-foreground hover:text-white'}`}>Beranda</Link>
-          <Link to="/roles" className={`px-4 py-2 text-xs font-bold rounded-md ${location.pathname === '/roles' ? 'text-primary' : 'text-muted-foreground hover:text-white'}`}>Posisi</Link>
-          {role === 'admin' && (
-            <Link to="/admin/dashboard" className={`px-4 py-2 text-xs font-bold rounded-md ${location.pathname === '/admin/dashboard' ? 'bg-rose-500/10 text-rose-500' : 'text-rose-400/70 hover:text-rose-400'}`}>Admin Panel</Link>
-          )}
-          {role === 'user' && (
-            <Link to="/dashboard" className={`px-4 py-2 text-xs font-bold rounded-md ${location.pathname === '/dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-white'}`}>Dashboard</Link>
-          )}
-        </nav>
+  const NavItem = ({ to, label, activeColor = "text-foreground" }: { to: string, label: string, activeColor?: string }) => {
+    const isActive = location.pathname === to;
+    return (
+      <Link 
+        to={to} 
+        className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+          isActive ? activeColor : 'text-muted-foreground hover:text-foreground'
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  };
 
-        <div className="flex items-center gap-3">
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-black/50 backdrop-blur-xl">
+      <div className="container mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-white rounded flex items-center justify-center font-bold text-black">S</div>
+            <span className="text-sm font-bold tracking-tight hidden sm:block uppercase letter-spacing-wider">{SERVER_NAME}</span>
+          </Link>
+          
+          <div className="hidden md:flex items-center gap-1">
+            <NavItem to="/" label="Beranda" />
+            <NavItem to="/roles" label="Posisi" />
+            {role === 'user' && <NavItem to="/dashboard" label="Dashboard" />}
+            {role === 'admin' && <NavItem to="/admin/dashboard" label="Admin Panel" activeColor="text-white" />}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
           {role ? (
-            <button onClick={handleLogout} className="h-9 px-4 text-xs font-bold bg-secondary border border-border rounded-lg hover:bg-rose-500/10 hover:text-rose-500 transition-all">Keluar</button>
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={handleLogout} 
+                className="text-xs font-semibold text-muted-foreground hover:text-destructive transition-colors"
+              >
+                Keluar
+              </button>
+            </div>
           ) : (
-            <>
-              <Link to="/auth/login" className="text-xs font-bold text-muted-foreground hover:text-white px-3">Masuk</Link>
-              <Link to="/auth/signup" className="h-9 px-5 bg-primary text-white rounded-lg text-xs font-bold flex items-center hover:bg-primary/90 transition-all">Daftar</Link>
-            </>
+            <div className="flex items-center gap-4">
+              <Link to="/auth/login" className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">Masuk</Link>
+              <Link to="/auth/signup" className="h-8 px-4 bg-white text-black rounded text-xs font-bold flex items-center hover:bg-zinc-200 transition-all">Daftar</Link>
+            </div>
           )}
         </div>
       </div>
-    </header>
+    </nav>
   );
 };
 

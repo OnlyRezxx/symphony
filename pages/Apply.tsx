@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { STAFF_ROLES, SERVER_NAME } from '../constants';
@@ -51,30 +50,19 @@ const Apply: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto py-40 flex flex-col items-center justify-center gap-4">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-muted-foreground font-bold uppercase tracking-[0.3em] text-xs">Memvalidasi Sesi...</span>
-      </div>
-    );
-  }
+  const InputLabel = ({ children }: { children: React.ReactNode }) => (
+    <label className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-2 block">{children}</label>
+  );
+
+  if (loading) return null;
 
   if (!user) {
     return (
       <div className="container mx-auto py-32 px-6 flex justify-center">
-        <div className="glass rounded-[2rem] p-12 max-w-md text-center border-border shadow-2xl">
-          <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-8 text-amber-500 border border-amber-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          </div>
-          <h2 className="text-3xl font-black mb-4 tracking-tighter">Akses Terbatas</h2>
-          <p className="text-muted-foreground mb-10 font-medium leading-relaxed">Anda harus masuk atau membuat akun terlebih dahulu untuk mengakses formulir pendaftaran staff.</p>
-          <Link 
-            to="/auth" 
-            className="w-full h-14 inline-flex items-center justify-center rounded-xl bg-primary text-white font-black text-lg shadow-xl shadow-primary/20 transition-all hover:scale-105"
-          >
-            Masuk / Daftar
-          </Link>
+        <div className="border border-border bg-zinc-950/50 rounded-xl p-12 max-w-md text-center">
+          <h2 className="text-2xl font-bold mb-4">Akses Dibatasi</h2>
+          <p className="text-muted-foreground mb-8 text-sm">Silakan masuk untuk melanjutkan proses pendaftaran staff.</p>
+          <Link to="/auth/login" className="h-10 px-6 inline-flex items-center justify-center rounded-md bg-white text-black font-bold text-sm w-full transition-all hover:bg-zinc-200">Masuk Sekarang</Link>
         </div>
       </div>
     );
@@ -83,83 +71,68 @@ const Apply: React.FC = () => {
   if (submitted) {
     return (
       <div className="container mx-auto py-32 px-6 text-center max-w-2xl">
-        <div className="w-24 h-24 bg-emerald-500/10 rounded-3xl flex items-center justify-center mx-auto mb-10 text-emerald-500 border border-emerald-500/20 animate-bounce">
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <div className="w-16 h-16 bg-zinc-800 border border-border rounded-full flex items-center justify-center mx-auto mb-8 text-white">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
         </div>
-        <h2 className="text-5xl font-black mb-6 tracking-tighter">Lamaran Diterima</h2>
-        <p className="text-muted-foreground mb-12 text-lg leading-relaxed font-medium">
-          Formulir pendaftaran Anda untuk posisi <strong>{STAFF_ROLES.find(r => r.id === formData.role_id)?.name}</strong> telah berhasil dikirimkan ke tim administrasi {SERVER_NAME}.
-        </p>
-        <button 
-          onClick={() => navigate('/')}
-          className="h-14 px-12 inline-flex items-center justify-center rounded-xl bg-secondary text-foreground font-black text-lg hover:bg-secondary/80 transition-all border border-border shadow-xl shadow-black/20"
-        >
-          Kembali ke Beranda
-        </button>
+        <h2 className="text-4xl font-bold mb-4 tracking-tight">Lamaran Terkirim</h2>
+        <p className="text-muted-foreground mb-10 text-sm">Tim administrasi akan segera meninjau aplikasi Anda. Silakan cek dashboard secara berkala.</p>
+        <button onClick={() => navigate('/dashboard')} className="h-10 px-8 bg-white text-black rounded-md font-bold text-sm hover:bg-zinc-200 transition-all">Kembali ke Dashboard</button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-20 px-6 max-w-4xl">
-      <div className="mb-14">
-        <div className="text-primary font-bold text-xs uppercase tracking-[0.3em] mb-3">Formulir Rekrutmen</div>
-        <h2 className="text-5xl font-black tracking-tighter mb-4">Kandidasi Staff</h2>
-        <p className="text-muted-foreground text-lg font-medium">Berikan informasi yang akurat dan detail. Kualitas jawaban Anda menentukan masa depan Anda di tim kami.</p>
+    <div className="container mx-auto py-24 px-6 max-w-3xl">
+      <div className="mb-12">
+        <h2 className="text-4xl font-bold tracking-tight mb-2 text-gradient">Formulir Rekrutmen</h2>
+        <p className="text-muted-foreground text-sm font-medium">Berikan informasi selengkap mungkin untuk meningkatkan peluang Anda.</p>
       </div>
 
-      <div className="glass rounded-[2.5rem] p-10 md:p-14 shadow-2xl border-border/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
-        
-        {error && (
-          <div className="mb-8 p-5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-bold flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            {error}
-          </div>
-        )}
+      <div className="border border-border bg-zinc-950/30 rounded-xl p-8 md:p-12">
+        {error && <div className="mb-8 p-4 bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold rounded-md">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Username Minecraft</label>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-1">
+              <InputLabel>Username Minecraft</InputLabel>
               <input 
                 required
                 type="text"
-                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-semibold"
-                placeholder="cth: SteveSymphony"
+                className="w-full bg-black border border-border rounded-md px-4 py-2.5 text-sm focus:ring-1 focus:ring-white outline-none transition-all"
+                placeholder="Steve_Symphony"
                 value={formData.username}
                 onChange={e => setFormData({...formData, username: e.target.value})}
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">ID Discord</label>
+            <div className="space-y-1">
+              <InputLabel>ID Discord</InputLabel>
               <input 
                 required
                 type="text"
-                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-semibold"
-                placeholder="cth: username#0000"
+                className="w-full bg-black border border-border rounded-md px-4 py-2.5 text-sm focus:ring-1 focus:ring-white outline-none transition-all"
+                placeholder="username#0000"
                 value={formData.discord}
                 onChange={e => setFormData({...formData, discord: e.target.value})}
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Usia Saat Ini</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-1">
+              <InputLabel>Usia</InputLabel>
               <input 
                 required
                 type="number"
-                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all font-semibold"
-                placeholder="cth: 18"
+                className="w-full bg-black border border-border rounded-md px-4 py-2.5 text-sm focus:ring-1 focus:ring-white outline-none transition-all"
+                placeholder="18"
                 value={formData.age}
                 onChange={e => setFormData({...formData, age: e.target.value})}
               />
             </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Posisi yang Diinginkan</label>
+            <div className="space-y-1">
+              <InputLabel>Posisi</InputLabel>
               <select 
-                className="w-full bg-background/50 border border-border rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all appearance-none cursor-pointer font-semibold"
+                className="w-full bg-black border border-border rounded-md px-4 py-2.5 text-sm focus:ring-1 focus:ring-white outline-none transition-all appearance-none cursor-pointer"
                 value={formData.role_id}
                 onChange={e => setFormData({...formData, role_id: e.target.value})}
               >
@@ -170,25 +143,25 @@ const Apply: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Riwayat Pengalaman Staff</label>
+          <div className="space-y-1">
+            <InputLabel>Pengalaman Staff</InputLabel>
             <textarea 
               required
-              rows={5}
-              className="w-full bg-background/50 border border-border rounded-xl px-6 py-5 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all resize-none font-medium leading-relaxed"
-              placeholder="Sebutkan server mana saja yang pernah Anda kelola dan apa tanggung jawab Anda..."
+              rows={4}
+              className="w-full bg-black border border-border rounded-md px-4 py-3 text-sm focus:ring-1 focus:ring-white outline-none transition-all resize-none"
+              placeholder="Ceritakan pengalaman Anda di server lain..."
               value={formData.experience}
               onChange={e => setFormData({...formData, experience: e.target.value})}
             />
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground ml-1">Motivasi & Alasan Bergabung</label>
+          <div className="space-y-1">
+            <InputLabel>Motivasi Bergabung</InputLabel>
             <textarea 
               required
-              rows={5}
-              className="w-full bg-background/50 border border-border rounded-xl px-6 py-5 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all resize-none font-medium leading-relaxed"
-              placeholder="Mengapa kami harus memilih Anda dibandingkan kandidat lainnya?"
+              rows={4}
+              className="w-full bg-black border border-border rounded-md px-4 py-3 text-sm focus:ring-1 focus:ring-white outline-none transition-all resize-none"
+              placeholder="Mengapa Anda ingin menjadi bagian dari tim kami?"
               value={formData.reason}
               onChange={e => setFormData({...formData, reason: e.target.value})}
             />
@@ -197,14 +170,9 @@ const Apply: React.FC = () => {
           <button 
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-16 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-2xl font-black text-xl tracking-tight transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-[0.98]"
+            className="w-full h-11 bg-white text-black rounded-md font-bold text-sm transition-all hover:bg-zinc-200 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isSubmitting ? (
-              <>
-                <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Mengirim Data...
-              </>
-            ) : 'Kirim Lamaran Sekarang'}
+            {isSubmitting ? 'Mengirim...' : 'Kirim Lamaran'}
           </button>
         </form>
       </div>
