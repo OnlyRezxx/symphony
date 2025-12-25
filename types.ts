@@ -1,4 +1,3 @@
-
 export enum ApplicationStatus {
   PENDING = 'PENDING',
   REVIEWING = 'REVIEWING',
@@ -17,6 +16,7 @@ export interface StaffRole {
 
 export interface Application {
   id: string;
+  user_id: string;
   username: string;
   discord: string;
   age: number;
@@ -25,12 +25,10 @@ export interface Application {
   reason: string;
   status: ApplicationStatus;
   created_at: string;
-  ai_summary?: string;
 }
 
-export interface UserSession {
-  user: {
-    id: string;
-    email?: string;
-  } | null;
+export interface UserProfile {
+  id: string;
+  email: string;
+  role: 'user' | 'admin';
 }

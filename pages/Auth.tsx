@@ -20,7 +20,8 @@ const Auth: React.FC = () => {
         await signIn(email, password);
         navigate('/');
       } else {
-        await signUp(email, password);
+        // Fix: Added missing third argument (profileData) to signUp call
+        await signUp(email, password, {});
         setError("Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi atau silakan coba masuk.");
         setIsLogin(true);
       }
