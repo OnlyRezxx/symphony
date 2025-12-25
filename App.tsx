@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -68,6 +69,7 @@ const App: React.FC = () => {
   if (loading) return null;
 
   return (
+    /* Removed unsupported 'future' prop to fix TypeScript error */
     <Router>
       <div className="min-h-screen bg-black text-foreground flex flex-col selection:bg-white selection:text-black">
         <Navbar role={role} />
